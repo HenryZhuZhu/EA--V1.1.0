@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>看懂 Cycle Time · 万能看板</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-width:1120px;background:#f4f7fc;color:#243650;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif}main{max-width:1240px;margin:auto;padding:32px 36px 42px}h1{font-size:28px;margin:4px 0}h2{font-size:18px;margin:0}p{color:#78879c;margin:6px 0}.eyebrow{font-size:11px;letter-spacing:2px;color:#0052d9}.panel{background:white;border:1px solid #e0e7f1;border-radius:14px;padding:22px;margin-top:20px}.head{display:flex;align-items:center;justify-content:space-between;gap:18px}.tag{font-size:11px;color:#0052d9;background:#edf4ff;border-radius:5px;padding:4px 9px}.legend{display:flex;gap:22px;color:#74849a;font-size:12px;margin:14px 0}.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}.blue{background:#3370ff}.purple{background:#a781eb}.pink{background:#d677a0}.green{background:#20a38f}.switch{display:flex;gap:3px;padding:4px;border-radius:7px;background:#edf1f7}button{font:inherit;cursor:pointer}.switch button{border:0;border-radius:5px;background:none;color:#718097;padding:6px 12px;font-size:12px}.switch button[aria-pressed=true]{background:#fff;color:#0052d9;box-shadow:0 1px 3px #20375818}button:focus-visible{outline:2px solid #0052d9;outline-offset:2px}.chart{border:1px solid #e5ebf3;border-radius:8px;overflow:hidden}.row{display:grid;grid-template-columns:185px 1fr 110px;min-height:62px;border-top:1px solid #edf1f6;align-items:center}.row:first-child{border:0;min-height:32px;background:#f6f8fc}.label{padding:8px 12px;font-size:12px}.label small{display:block;color:#8a98aa;font-size:10px}.lane{height:62px;position:relative;background:repeating-linear-gradient(to right,transparent 0,transparent calc(8.333333% - 1px),#edf1f6 calc(8.333333% - 1px),#edf1f6 8.333333%)}.bar{position:absolute;top:21px;height:22px;border-radius:4px;color:white;font-size:11px;line-height:22px;text-align:center;white-space:nowrap}.wait{background:repeating-linear-gradient(135deg,#a781eb,#a781eb 4px,#9370d2 4px,#9370d2 8px)}.ticks{display:flex;justify-content:space-between;font-size:10px;color:#8997aa}.value{text-align:right;padding-right:12px;font-size:12px;font-weight:600;color:#0052d9}.caption{min-height:26px;font-size:12px;color:#5e728d;margin-top:10px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.card{border-radius:10px;background:#f7f9fd;border:1px solid #e6ecf5;padding:16px}.card h3{font-size:13px;margin:0;font-weight:500;color:#5d718f}.number{font-size:30px;line-height:1.3;color:#0052d9;font-weight:700;margin:8px 0}.number small{font-size:12px;font-weight:400}.formula{font-size:13px;font-weight:600}.meaning{font-size:12px;color:#7b899c;margin-top:5px}.tip{display:grid;grid-template-columns:1fr 1fr;gap:18px}.tipbox{padding:15px 18px;border-radius:9px;background:#edf7f3}.tipbox b{color:#278568}.tipbox p{font-size:13px;color:#4f7165}.warning{background:#fff6e8}.warning b{color:#a36c18}.warning p{color:#8d774f}.rule{display:flex;justify-content:space-around;padding:16px 0 0;color:#60748e;font-size:13px}.rule strong{color:#0052d9}.foot{font-size:11px;color:#8b99ab;margin-top:18px}details{margin-top:14px;border-top:1px solid #e7edf5;padding-top:12px;font-size:12px;color:#738298}summary{cursor:pointer;color:#536984}details p{font-size:12px}
+@media print{body{min-width:0;background:white}main{padding:12px}.panel{break-inside:avoid}.switch{display:none}.row{grid-template-columns:145px 1fr 80px}}
+</style>
+<style>
+.metric-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.metric-buttons button{text-align:left;border:1px solid #dce5f1;border-radius:8px;background:#f8fafd;padding:10px 12px;font-size:12px;color:#536b8b}.metric-buttons button[aria-pressed=true]{border-color:var(--metric-color);background:#fff;box-shadow:inset 4px 0 var(--metric-color);color:#20344f;font-weight:600}.metric-buttons b{float:right}.metric-selects{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:#65778f}.metric-selects select{font:inherit;padding:5px 8px;border:1px solid #dce5f1;border-radius:5px;background:white}.metric-selects[hidden],.metric-selects label[hidden]{display:none}.original-row .ghost{background:#e5eaf1;color:#8491a3;opacity:.65}.original-row .bar{transition:background .15s}.original-row.selected-row .label{background:#f0f5fc}.selected-result{border:1px solid #d5e2f5;border-radius:8px;margin-top:10px;overflow:hidden}.selected-result .row{border:0;background:#f4f8ff}.step-explanation{padding:12px 16px;background:#f4f8ff;border-radius:8px;margin-top:12px;font-size:13px;color:#445f80}.original .row{grid-template-columns:210px 1fr 100px}.row .ticks{min-width:0}.row .label b{font-size:11px}.pick-card{width:100%;text-align:left;cursor:pointer}.pick-card[aria-pressed=true]{border-color:#0052d9;box-shadow:0 0 0 1px #0052d9}.original .value{font-size:11px}.legend-note{font-size:11px;color:#8391a5}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">万能看板 · 用户指南</div>
+<h1>Cycle Time，看这一个例子就懂</h1>
+<p>先看整个 Case，再看部门，最后看单个任务。<b style="color:#425b80">“总”包含等待，“有效”扣除对应的等待。</b></p>
+<div class="tip" style="margin-top:16px">
+<div class="tipbox"><b>Case：用结案时间减创建时间</b><p>看完整的端到端跨度；有效值再扣明确的 Case 级验证等待。</p></div>
+<div class="tipbox"><b>部门：把同一 Case 内任务区间合并去重</b><p>看部门覆盖的处理时间；有效值要先逐任务扣自身等待，再合并。</p></div>
+</div>
+
+<section class="panel">
+<div class="head"><div><h2>① 点击指标，在原 Case 甘特图中看计算范围</h2><p style="font-size:12px">9 月 1 日创建 → 9 月 13 日结案。一级部门：<b>测试中心</b>，包含 PTE 的任务 A、B 和 CP 的任务 C。</p></div><span class="tag">固定教学示例 · 非实时业务数据</span></div>
+<div id="metricButtons" class="metric-buttons" aria-label="选择高亮指标"></div>
+<div id="metricSelects" class="metric-selects" hidden>
+  <label id="taskChoice">普通任务 <select id="selectedTask" aria-label="选择普通任务"><option value="0">A · PTE 主分析</option><option value="1">B · PTE 并行任务</option><option value="2">C · CP 回归任务</option></select></label>
+  <label id="waitChoice">验证任务 <select id="selectedWait" aria-label="选择验证任务"><option value="0">A · 等待外部反馈</option><option value="1">A · 等待内部验证</option><option value="2">B · 等待内部验证</option><option value="3">Case · 最终外部验证</option></select></label>
+</div>
+<div class="legend"><span><i id="activeColor" class="dot" style="background:#3370ff"></i>彩色：当前指标计入的时间</span><span><i class="dot" style="background:#e5eaf1"></i>浅灰：原始时间，仅供定位</span><span><i class="dot" style="border:1px dashed #a3afbf;background:#f1f3f7"></i>虚线 −：扣除时间</span></div>
+<div id="originalChart" class="chart original" aria-label="原 Case 任务甘特图"></div>
+<div id="selectedResult" class="selected-result original" aria-label="当前指标计算结果"></div>
+<div id="metricExplanation" class="step-explanation" aria-live="polite"></div>
+<p class="legend-note">图中保留全部任务与验证事项；选择指标只改变高亮范围，不改变原始数据。部门结果必须合并重叠区间，不能将各行数值相加。</p>
+<details><summary>展开查看：六类指标的时间区间对照</summary>
+<div class="head" style="margin-top:12px"><div class="legend"><span><i class="dot blue"></i>Case / 任务计入时间</span><span><i class="dot green"></i>本部门计入时间</span><span><i class="dot purple"></i>等待验证时长</span><span><i class="dot" style="background:#f1f3f7;border:1px dashed #a3afbf"></i>扣除时间</span></div><span class="tag">同一时间轴 · 六类指标同时对照</span></div>
+<div class="chart" id="chart"></div>
+<div class="caption" id="caption" aria-live="polite"></div>
+<div class="chart" id="support" style="margin-top:12px"></div>
+<p style="font-size:12px">A 等外部反馈：9/3—9/5；A 等内部验证：9/6—9/7；B 等内部验证：9/5—9/6。<br>Case 最终验证：9/11—9/13，<b>这与单个任务的验证不是一回事。</b></p>
+</details></section>
+
+<section class="panel"><h2>② 六个名称，对应六个答案</h2><p style="font-size:12px">也可点击下方指标卡，返回原图查看对应颜色。</p><div class="cards" id="cards"></div></section>
+
+<section class="panel"><h2>③ 有空档时，两种算法的差别最明显</h2>
+<p style="font-size:12px">独立小例子：9/1 创建、9/10 结案；只有两项 PTE 任务，且没有任何验证等待。</p>
+<div id="gapChart" class="chart original" style="margin-top:14px" aria-label="有空档的 Case 与部门周期对照"></div>
+<div class="tip" style="margin-top:14px">
+<div class="tipbox"><b>Case 总／有效：都是 9 天</b><p>9/10 − 9/1 = 9 天。分派、交接、结案前等未被明确排除的空档，仍属于 Case 周期。</p></div>
+<div class="tipbox warning"><b>PTE 总／有效：都是 4 天</b><p>9/2—9/4 加上 9/7—9/9，共 2 + 2 = 4 天。不能取最早任务到最晚任务的 7 天，也不能把 Case 算成 4 天。</p></div>
+</div>
+<p class="legend-note">空档不等于验证等待。Case 有效 Cycle Time 不是“所有任务有效时间并集”；如果将来要统计任务活跃历时，应另立指标，本页不新增。</p>
+</section>
+
+<section class="panel"><h2>④ 去重与平均值，要在正确的范围内计算</h2>
+<div class="tip" style="margin-top:15px">
+<div class="tipbox"><b>一个任务等结果，不代表整个部门停了</b><p>A 等待时，B 可能仍在推进。一级部门测试中心在 9/1—9/11 内，只有 <strong>9/3—9/4</strong> 这 1 天完全没有有效处理。</p><div class="formula">测试中心总 10 天 → 有效 9 天</div></div>
+<div class="tipbox warning"><b>不要把各任务或等待时长直接相加减</b><p>A、B 并行部分只能算一次。三次任务等待合计 4 天，但不能据此算成测试中心有效 10 − 4 = 6 天。</p><div class="formula">先逐任务扣等待，再合并有效区间</div></div>
+</div>
+<div class="rule"><span>部门平均值：<strong>先逐 Case 算，再平均</strong></span><span>任务平均值：<strong>先逐任务算，再平均</strong></span></div>
+<div class="tip" style="margin-top:14px">
+<div class="tipbox"><b>不同 Case 不再合并去重</b><p>两个 Case 同时在 9/2—9/4 处理，各自部门周期都是 2 天。平均 = (2 + 2) ÷ 2 = <strong>2 天</strong>，不是先合并成 2 天再除以 2。</p></div>
+<div class="tipbox"><b>任务平均不扣彼此的并行重叠</b><p>先算每个普通任务扣自身等待后的 Cycle Time，再平均。只有计算“同一 Case 的部门周期”时，才合并不同任务的有效区间。</p></div>
+</div>
+<details><summary>再了解：平均、中位数和“只有关系，没有任务”</summary>
+<p>本例只有 1 个 Case：测试中心总 Cycle Time 平均／中位数都是 10 天，有效平均／中位数都是 9 天。3 项普通任务有效值为 5、3、2 天，任务平均为 3.33 天，中位数为 3 天。验证特殊任务不计入普通任务数量。下级 PTE 单独统计则为总 8 天、有效 7 天。</p>
+<p>如果 QA 只是创建了这个 Case、没有 QA 普通任务：相关 Case 数为 1，有本部门任务的 Case 数为 0；本部门总／有效 Cycle Time 显示“—”，不能按 0 天参与平均。Owner、协作者同理。</p>
+<p>多个 Case 的部门值排序后，中位数取中间一个；偶数个取中间两个的平均。测试中心等父部门需要重新合并下级任务区间，不能直接相加子部门周期。</p>
+</details>
+</section>
+<div class="foot">说明：所有示例时间为 2026 年 9 月、北京时间 09:00，1 天 = 24 小时。普通任务完成／拒绝／中止后停止计时，未结束则截至当前；验证任务完成／取消后停止等待计时。归属时间限于 Case 生命周期内，缺失时间不当作 0。此页为独立教学示例，不修改原型。</div>
+<script>
+const tasks=[
+ {name:'PTE 任务 A',owner:'张伟',start:0,end:8,waits:[{start:2,end:4},{start:5,end:6}]},
+ {name:'PTE 任务 B',owner:'刘洋',start:3,end:7,waits:[{start:4,end:5}]},
+ {name:'CP 任务 C',owner:'王芳',start:8,end:10,waits:[]}
+];
+const caseRange=[{start:0,end:12}],caseWait=[{start:10,end:12}];
+function union(values){const result=[];for(const p of values.slice().sort((a,b)=>a.start-b.start)){const last=result.at(-1);if(last&&p.start<=last.end)last.end=Math.max(last.end,p.end);else result.push({...p})}return result}
+function subtract(values,blocks){let parts=values.map(p=>({...p}));for(const b of union(blocks))parts=parts.flatMap(p=>b.end<=p.start||b.start>=p.end?[p]:[{start:p.start,end:Math.min(p.end,b.start)},{start:Math.max(p.start,b.end),end:p.end}].filter(x=>x.end>x.start));return parts}
+const len=values=>union(values).reduce((sum,p)=>sum+p.end-p.start,0);
+const effective=t=>subtract([{start:t.start,end:t.end}],t.waits);
+const pteTotal=union(tasks.slice(0,2).map(t=>({start:t.start,end:t.end}))),pteEffective=union(tasks.slice(0,2).flatMap(effective));
+const centerTotal=union(tasks.map(t=>({start:t.start,end:t.end}))),centerEffective=union(tasks.flatMap(effective));
+const numbers={caseTotal:len(caseRange),caseEffective:len(subtract(caseRange,caseWait)),pteTotal:len(pteTotal),pteEffective:len(pteEffective),a:len(effective(tasks[0])),b:len(effective(tasks[1])),c:len(effective(tasks[2]))};
+function bars(parts,color){return parts.map(p=>`<span class="bar ${color}" style="left:${p.start/12*100}%;width:${(p.end-p.start)/12*100}%" title="9/${p.start+1} 09:00 — 9/${p.end+1} 09:00，共 ${p.end-p.start} 天">${p.end-p.start}天</span>`).join('')}
+function removed(parts){return parts.map(p=>`<span class="bar" style="left:${p.start/12*100}%;width:${(p.end-p.start)/12*100}%;background:#f1f3f7;border:1px dashed #a3afbf;color:#7b8798" title="扣除：9/${p.start+1} 至 9/${p.end+1}">−${p.end-p.start}天</span>`).join('')}
+function row(name,note,parts,color,value,excluded=[]){return `<div class="row"><div class="label"><b>${name}</b><small>${note}</small></div><div class="lane">${removed(excluded)}${bars(parts,color)}</div><div class="value">${value} 天</div></div>`}
+function render(){let html=`<div class="row"><div class="label">指标名称 / 2026 年 9 月</div><div class="ticks">${Array.from({length:13},(_,i)=>`<span>9/${i+1}</span>`).join('')}</div><div class="value" style="color:#8191a5;font-weight:400">最终数值</div></div>`;
+html+=row('① Case 总 Cycle Time','从创建到结案，完整 12 天',caseRange,'blue',numbers.caseTotal);
+html+=row('② Case 有效 Cycle Time','只扣 Case 最终外部验证 2 天',subtract(caseRange,caseWait),'blue',numbers.caseEffective,caseWait);
+html+=row('③ 本部门总 Cycle Time','测试中心：A、B、C 完整区间合并',centerTotal,'green',len(centerTotal));
+html+=row('④ 本部门有效 Cycle Time','测试中心：只扣净空档 9/3—9/4',centerEffective,'green',len(centerEffective),subtract(centerTotal,centerEffective));
+html+=row('⑤ 任务 Cycle Time · A','扣外部反馈 2 天、内部验证 1 天',effective(tasks[0]),'blue',numbers.a,tasks[0].waits);
+html+=row('⑥ 等待验证时长','A · 等待外部反馈', [tasks[0].waits[0]],'wait',len([tasks[0].waits[0]]));
+html+=row('⑥ 等待验证时长','A · 等待内部验证', [tasks[0].waits[1]],'wait',len([tasks[0].waits[1]]));
+document.getElementById('chart').innerHTML=html;
+document.getElementById('caption').textContent='横向看“哪些时间计入”，纵向比较“总与有效差在哪里”。灰色虚线不计入右侧数值；第⑥类按每一项验证分别计时，不代表全部等待的合计。';
+document.getElementById('support').innerHTML=row('PTE 并行任务 B','总 4 天，内部验证等待 1 天',effective(tasks[1]),'blue',numbers.b,tasks[1].waits)+row('CP 回归任务 C','无等待，任务 Cycle Time 2 天',effective(tasks[2]),'blue',numbers.c)+row('Case 最终外部验证','仅从 Case 有效 Cycle Time 扣除',caseWait,'pink',len(caseWait));
+const gapCase=[{start:0,end:9}],gapTasks=[{start:1,end:3},{start:6,end:8}];
+document.getElementById('gapChart').innerHTML=`<div class="row"><div class="label">独立示例 / 每日 09:00</div><div class="ticks">${Array.from({length:13},(_,i)=>`<span>9/${i+1}</span>`).join('')}</div><div class="value">周期</div></div>`
++row('Case 总／有效 Cycle Time','无验证等待：总 = 有效',gapCase,'blue',len(gapCase))
++row('PTE 任务 D','9/2—9/4，无阻塞',[gapTasks[0]],'green',len([gapTasks[0]]))
++row('PTE 任务 E','9/7—9/9，无阻塞',[gapTasks[1]],'green',len([gapTasks[1]]))
++row('本部门总／有效 Cycle Time','只计任务覆盖，不计中间空档',union(gapTasks),'green',len(gapTasks));
+}
+const cards=[
+ ['Case 总 Cycle Time',numbers.caseTotal,'9/13 − 9/1 = 12 天','整个 Case 经过多久，包含所有等待。'],
+ ['Case 有效 Cycle Time',numbers.caseEffective,'12 − Case 最终验证 2 = 10 天','只扣 Case 级验证，不扣单个任务等待。'],
+ ['本部门总 Cycle Time · 测试中心',len(centerTotal),'A、B、C 时间区间合并 = 10 天','包含 PTE、CP，重叠部分只算一次。'],
+ ['本部门有效 Cycle Time · 测试中心',len(centerEffective),'各任务扣等待后，再合并 = 9 天','父部门重新合并下级任务，不直接相加子部门均值。'],
+ ['任务 Cycle Time · 以 A 为例',numbers.a,'8 − 外部反馈 2 − 内部验证 1 = 5 天',`B 为 ${numbers.b} 天，C 为 ${numbers.c} 天；各扣自己的等待。`],
+ ['等待验证时长 · A 外部反馈',2,'9/5 − 9/3 = 2 天','A、B 的内部验证各 1 天；Case 最终验证另计 2 天。']
+];
+document.getElementById('cards').innerHTML=cards.map(([name,value,formula,meaning],index)=>`<button type="button" class="card pick-card" data-metric="${index}" aria-pressed="${index===0}"><h3>${name}</h3><div class="number">${value}<small> 天</small></div><div class="formula">${formula}</div><div class="meaning">${meaning}</div></button>`).join('');
+const colors=['#3370ff','#1475b8','#20a38f','#0c837a','#e29627','#9466d4'];
+const names=['Case 总 Cycle Time','Case 有效 Cycle Time','本部门总 Cycle Time','本部门有效 Cycle Time','任务 Cycle Time','等待验证时长'];
+const waits=[{name:'A · 等待外部反馈',...tasks[0].waits[0]},{name:'A · 等待内部验证',...tasks[0].waits[1]},{name:'B · 等待内部验证',...tasks[1].waits[0]},{name:'Case · 最终外部验证',...caseWait[0]}];
+let selectedMetric=0;
+function colored(parts,color){return parts.map(p=>`<span class="bar" style="background:${color};left:${p.start/12*100}%;width:${(p.end-p.start)/12*100}%" title="计入 9/${p.start+1} 09:00 — 9/${p.end+1} 09:00">${p.end-p.start}天</span>`).join('')}
+function originalRow(name,note,raw,highlight,exclude,color){return `<div class="row original-row ${highlight.length||exclude.length?'selected-row':''}"><div class="label"><b>${name}</b><small>${note}</small></div><div class="lane">${bars(raw,'ghost')}${removed(exclude)}${colored(highlight,color)}</div><div class="value">${highlight.length?len(highlight)+' 天':exclude.length?'扣除 '+len(exclude)+' 天':'—'}</div></div>`}
+function updateHighlight(){
+ const index=selectedMetric,color=colors[index],ti=Number(document.getElementById('selectedTask').value),wi=Number(document.getElementById('selectedWait').value);
+ const results=[caseRange,subtract(caseRange,caseWait),centerTotal,centerEffective,effective(tasks[ti]),[waits[wi]]];
+ const selected=results[index];
+ document.getElementById('metricButtons').innerHTML=names.map((name,i)=>`<button type="button" data-metric="${i}" aria-pressed="${i===index}" style="--metric-color:${colors[i]}">${i+1}. ${name}<b>${len(results[i])} 天</b></button>`).join('');
+ document.querySelectorAll('#cards [data-metric]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.metric)===index)));
+ document.getElementById('metricSelects').hidden=index<4;document.getElementById('taskChoice').hidden=index!==4;document.getElementById('waitChoice').hidden=index!==5;
+ document.getElementById('activeColor').style.background=color;
+ let html=`<div class="row"><div class="label">原 Case / 测试中心 → PTE、CP</div><div class="ticks">${Array.from({length:13},(_,i)=>`<span>9/${i+1}</span>`).join('')}</div><div class="value">计入 / 扣除</div></div>`;
+ html+=originalRow('Case 创建 → 结案','整个 Case 的端到端时间',caseRange,index<2?selected:[],index===1?caseWait:[],color);
+ tasks.forEach((t,i)=>{
+  const highlight=index===2?[{start:t.start,end:t.end}]:index===3||(index===4&&ti===i)?effective(t):[];
+  const excluded=index===3||(index===4&&ti===i)?t.waits:[];
+  html+=originalRow(t.name,t.owner+' · 普通任务',[{start:t.start,end:t.end}],highlight,excluded,color);
+  const ids=i===0?[0,1]:i===1?[2]:[];
+  ids.forEach(w=>{const wait=waits[w];html+=originalRow('↳ '+wait.name,'特殊任务：只阻塞关联原任务',[wait],index===5&&wi===w?[wait]:[],[],color)});
+ });
+ html+=originalRow('Case 最终外部验证','Case 级等待，不是普通任务',[waits[3]],index===5&&wi===3?[waits[3]]:[],index===1?caseWait:[],color);
+ document.getElementById('originalChart').innerHTML=html;
+ const resultName=index===4?'任务 Cycle Time · '+tasks[ti].name:index===5?'等待验证时长 · '+waits[wi].name:names[index];
+ document.getElementById('selectedResult').innerHTML=originalRow(resultName,'本指标最终结果（部门值已合并去重）',selected,selected,[],color);
+ const explanations=[
+  '从 9/1 创建到 9/13 结案，Case 总 Cycle Time = 12 天，所有等待都包含在内。',
+  '只扣 9/11—9/13 的 Case 最终外部验证：12 − 2 = 10 天。A、B 的任务级等待不会再次从 Case 扣除。',
+  '一级部门测试中心包含 PTE 和 CP。A 8 天、B 4 天、C 2 天按时间区间合并为 9/1—9/11，共 10 天，不是相加后的 14 天。',
+  '先分别扣 A、B 的验证等待，再与 C 合并。9/1—9/3（2 天）＋9/4—9/11（7 天）= 9 天。灰色空档仅 1 天，不能扣除全部等待时长之和。',
+  `${tasks[ti].name}：完整历时 ${tasks[ti].end-tasks[ti].start} 天 − 自身等待区间并集 ${len(tasks[ti].waits)} 天 = ${len(selected)} 天；其他任务不参与该指标计算。`,
+  `${waits[wi].name}：9/${waits[wi].end+1} − 9/${waits[wi].start+1} = ${len(selected)} 天。这是单项等待验证时长，不与其他等待相加；${wi===3?'属于 Case 级等待。':'只阻塞它关联的原任务。'}`
+ ];
+ document.getElementById('metricExplanation').textContent=explanations[index];
+}
+document.addEventListener('click',event=>{const b=event.target.closest('[data-metric]');if(!b)return;selectedMetric=Number(b.dataset.metric);if(b.classList.contains('pick-card')){if(selectedMetric===4)document.getElementById('selectedTask').value='0';if(selectedMetric===5)document.getElementById('selectedWait').value='0';}updateHighlight();if(b.classList.contains('pick-card'))document.getElementById('metricButtons').scrollIntoView({behavior:'smooth',block:'start'});});
+['selectedTask','selectedWait'].forEach(id=>document.getElementById(id).addEventListener('change',updateHighlight));
+updateHighlight();
+render();
+</script>
+</main></body></html>
