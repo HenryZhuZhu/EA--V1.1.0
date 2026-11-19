@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>EA Platform V1.1.2 · 构建新护城河</title>
+<meta name="description" content="EA 让专家的排查思路成为团队可复用的 Case。体验 V1.1.2，从一个判断的依据，到跨产品、跨部门的经验复盘。" />
+<script defer src="assets/case-count.js"></script>
+<script defer src="assets/case-reel.js"></script>
+<style>
+  :root{
+    --brand-1:#00A4FF;
+    --brand-2:#0052D9;
+    --ink-900:#0b1220;
+    --ink-800:#1e293b;
+    --ink-700:#334155;
+    --ink-600:#475569;
+    --ink-500:#64748b;
+    --ink-400:#94a3b8;
+    --line:#e6eaf1;
+    --bg:#ffffff;
+    --bg-soft:#f6f8fc;
+    --radius:18px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:84px}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","Microsoft YaHei","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink-800);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    line-height:1.55;
+    min-width:1180px;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+  [hidden]{display:none!important}
+  :focus-visible{outline:3px solid var(--brand-1);outline-offset:4px}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .grad-text{
+    background:linear-gradient(120deg,var(--brand-1),var(--brand-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 14px;border-radius:999px;
+    background:rgba(0,82,217,.06);
+    border:1px solid rgba(0,82,217,.14);
+    color:var(--brand-2);font-size:13px;font-weight:600;letter-spacing:.02em;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(120deg,var(--brand-1),var(--brand-2));box-shadow:0 0 0 4px rgba(0,164,255,.16)}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--brand-1),var(--brand-2));
+    z-index:120;transition:width .12s linear;
+  }
+
+  /* ---------- nav ---------- */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background .4s var(--ease),box-shadow .4s var(--ease),border-color .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  header.nav.scrolled{
+    background:rgba(255,255,255,.72);
+    backdrop-filter:saturate(180%) blur(20px);
+    -webkit-backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;height:60px;gap:18px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.01em;color:var(--ink-900);flex:1 1 0}
+  .logo{
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:800;
+    background:linear-gradient(135deg,var(--brand-1),var(--brand-2));
+    box-shadow:0 6px 16px rgba(0,82,217,.28);
+  }
+  .brand small{display:block;font-size:10px;font-weight:500;color:var(--ink-400);letter-spacing:.12em;text-transform:uppercase}
+  .nav-links{display:flex;gap:22px;font-size:14px;color:var(--ink-700);justify-content:center;white-space:nowrap}
+  .nav-links a{position:relative;padding:4px 0;transition:color .2s}
+  .nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:-2px;height:2px;background:linear-gradient(90deg,var(--brand-1),var(--brand-2));transition:right .3s var(--ease)}
+  .nav-links a:hover{color:var(--ink-900)}
+  .nav-links a:hover::after{right:0}
+  .nav-cta{display:flex;gap:10px;align-items:center;flex:1 1 0;justify-content:flex-end}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink-800);
+    transition:transform .2s var(--ease),box-shadow .3s var(--ease),background .3s,border-color .3s;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost:hover{border-color:#c9d4e6}
+  .btn.primary{
+    border-color:transparent;color:#fff;
+    background:linear-gradient(135deg,var(--brand-1),var(--brand-2));
+    box-shadow:0 10px 24px -8px rgba(0,82,217,.5);
+  }
+  .btn.primary:hover{box-shadow:0 16px 34px -10px rgba(0,82,217,.6)}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:148px 0 80px;overflow:hidden}
+  .hero .bg{position:absolute;inset:0;z-index:-2;background:
+    radial-gradient(1100px 540px at 78% -8%, rgba(0,164,255,.16), transparent 60%),
+    radial-gradient(900px 520px at 8% 8%, rgba(0,82,217,.10), transparent 55%),
+    linear-gradient(180deg,#fbfdff, #ffffff 60%);}
+  .hero .grid{position:absolute;inset:0;z-index:-1;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(900px 520px at 60% 0%,#000,transparent 72%);
+    mask-image:radial-gradient(900px 520px at 60% 0%,#000,transparent 72%);}
+  .orb{position:absolute;border-radius:50%;filter:blur(48px);z-index:-1;opacity:.55;will-change:transform}
+  .orb.a{width:380px;height:380px;left:-90px;top:40px;background:radial-gradient(circle at 30% 30%,rgba(0,164,255,.55),transparent 65%)}
+  .orb.b{width:440px;height:440px;right:-120px;top:-40px;background:radial-gradient(circle at 60% 40%,rgba(0,82,217,.42),transparent 65%)}
+
+  .hero h1{
+    font-size:32px;line-height:1.42;letter-spacing:-.02em;
+    font-weight:650;color:var(--ink-900);margin:22px 0 0;
+    word-break:keep-all;
+  }
+  .hero .sub{margin:16px 0 0;font-size:16px;color:var(--ink-500);max-width:570px;text-wrap:pretty}
+  .hero .actions{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+  .hero .note{margin-top:18px;font-size:13px;color:var(--ink-400)}
+  .hero-intro{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:50px;align-items:center}
+  .case-stat{padding:24px 28px;border:1px solid var(--line);border-top:3px solid var(--brand-1);border-radius:16px;background:#fff;box-shadow:0 20px 60px -36px rgba(0,82,217,.42)}
+  .case-stat small{color:var(--brand-2);letter-spacing:.13em;font-weight:700}
+  .case-stat h2{margin:12px 0 0;font-size:17px}
+  .case-stat strong{display:block;font-size:58px;font-variant-numeric:tabular-nums;line-height:1.25;color:var(--ink-900)}
+  .case-stat p{margin:8px 0 0;color:var(--ink-500);font-size:13px}
+  .case-stat .digits{display:flex;align-items:flex-start;height:1em;line-height:1;overflow:hidden;color:var(--brand-2);margin:10px 0}
+  .case-stat .digit{display:inline-flex;flex-direction:column}
+  .case-stat .digit span{height:1em}
+  .case-stat #case-total{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+
+  /* ---------- framed real screenshot ---------- */
+  .frame{
+    position:relative;
+    border-radius:22px;border:1px solid var(--line);background:#fff;
+    box-shadow:0 40px 90px -40px rgba(13,33,73,.4), 0 8px 24px -12px rgba(13,33,73,.18);
+    overflow:hidden;
+  }
+  .frame .barwin{display:flex;align-items:center;gap:7px;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
+  .tl{width:11px;height:11px;border-radius:50%}
+  .tl.r{background:#ff5f57}.tl.y{background:#febc2e}.tl.g{background:#28c840}
+  .frame .url{margin-left:12px;font-size:12px;color:var(--ink-400);background:#fff;border:1px solid var(--line);padding:4px 12px;border-radius:7px}
+  .frame img{width:100%;height:auto;display:block}
+
+  .hero-mock{margin:24px auto 0;max-width:1040px;will-change:transform}
+  .showcase{margin-top:48px;scroll-margin-top:84px}
+  .showcase-tabs{display:flex;justify-content:center;gap:8px}
+  .showcase-tabs button{border:1px solid transparent;border-radius:999px;background:transparent;color:var(--ink-500);padding:9px 20px;cursor:pointer;font-size:14px}
+  .showcase-tabs button[aria-selected="true"]{color:var(--brand-2);border-color:rgba(0,82,217,.18);background:#fff;box-shadow:0 6px 20px -10px rgba(0,82,217,.3);font-weight:600}
+  .shot-note{font-size:12px;color:var(--ink-500);text-align:center;margin:18px 0 0}
+  .image-zoom{position:absolute;right:12px;top:10px;z-index:1;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink-600);padding:4px 9px;font-size:11px;cursor:pointer}
+  .image-zoom:hover{color:var(--brand-2);border-color:var(--brand-1)}
+  .shot-dialog{padding:0;border:1px solid var(--line);border-radius:16px;background:#fff;max-width:94vw;max-height:94vh;box-shadow:0 30px 100px rgba(0,0,0,.25)}
+  .shot-dialog::backdrop{background:rgba(8,18,38,.75);backdrop-filter:blur(8px)}
+  .shot-dialog header{display:flex;align-items:center;gap:24px;padding:12px 18px;border-bottom:1px solid var(--line);color:var(--ink-600);font-size:13px}
+  .shot-dialog header button{margin-left:auto;flex:none;border:1px solid var(--line);background:var(--bg-soft);padding:5px 12px;border-radius:6px;cursor:pointer}
+  .shot-dialog img{width:auto;max-width:90vw;max-height:calc(92vh - 60px);object-fit:contain}
+
+  /* ---------- generic reveal ---------- */
+  .reveal{opacity:1;transform:none;transition:opacity .9s var(--ease),transform .9s var(--ease)}
+  .motion-ready .reveal:not(.in){opacity:0;transform:translateY(34px)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+  /* ---------- section shell ---------- */
+  section{position:relative}
+  .sec{padding:104px 0}
+  .sec.soft{background:linear-gradient(180deg,#fff, var(--bg-soft) 18%, var(--bg-soft) 82%, #fff)}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-2)}
+  .htitle{font-size:clamp(28px,4vw,46px);line-height:1.14;letter-spacing:-.02em;font-weight:800;color:var(--ink-900);margin:14px 0 0;word-break:keep-all;text-wrap:balance}
+  .lead{margin:16px 0 0;font-size:clamp(15px,1.6vw,18px);color:var(--ink-500);max-width:640px;text-wrap:pretty}
+
+  /* stats strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:18px}
+  .stat{padding:26px 22px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;text-align:left}
+  .stat .big{font-size:clamp(34px,5vw,52px);font-weight:800;letter-spacing:-.03em;color:var(--ink-900);line-height:1}
+  .stat .big .u{font-size:.5em;color:var(--brand-2);margin-left:4px;font-weight:700}
+  .stat .cap{margin-top:10px;color:var(--ink-500);font-size:14px}
+
+  /* why-EA: 痛点 → EA 对比 */
+  .v4{margin-top:44px;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 30px 70px -46px rgba(13,33,73,.3)}
+  .v4 .head{display:grid;grid-template-columns:1fr 1fr;background:var(--bg-soft);border-bottom:1px solid var(--line)}
+  .v4 .head div{padding:16px 26px;font-size:13px;font-weight:700;letter-spacing:.04em}
+  .v4 .head .l{color:var(--ink-400)}
+  .v4 .head .r{color:var(--brand-2);border-left:1px solid var(--line)}
+  .v4 .vrow{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+  .v4 .vrow:first-of-type{border-top:0}
+  .v4 .cell{padding:20px 26px;font-size:15px;display:flex;gap:12px;align-items:flex-start;line-height:1.5}
+  .v4 .cell.l{color:var(--ink-500)}
+  .v4 .cell.l .x{color:#cbd5e1;font-weight:800;flex:none}
+  .v4 .cell.r{color:var(--ink-800);border-left:1px solid var(--line);background:linear-gradient(90deg,rgba(0,164,255,.045),transparent)}
+  .v4 .cell.r .ck{flex:none;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;background:linear-gradient(135deg,var(--brand-1),var(--brand-2))}
+  .v4 .cell.r b{color:var(--ink-900)}
+
+  /* ---------- pinned closed-loop ---------- */
+  .pin-wrap{height:420vh;position:relative}
+  .pin{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+  .loop{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;width:100%}
+  .loop .copy h3{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em;font-weight:800;color:var(--ink-900);margin:18px 0 0;min-height:1.1em;word-break:keep-all;text-wrap:balance}
+  .loop .copy p{font-size:17px;color:var(--ink-500);margin-top:14px;max-width:460px;text-wrap:pretty}
+  .stepnums{display:flex;gap:10px;margin-top:34px}
+  .stepnums .n{flex:1;height:4px;border-radius:99px;background:#e3e9f3;overflow:hidden}
+  .stepnums .n i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand-1),var(--brand-2));transition:width .2s linear}
+  .stage{position:relative;height:440px}
+  .card-loop{
+    position:absolute;inset:0;border-radius:22px;border:1px solid var(--line);background:#fff;
+    box-shadow:0 30px 70px -36px rgba(13,33,73,.34);
+    padding:30px;opacity:0;transform:translateY(40px) scale(.96);transition:opacity .6s var(--ease),transform .6s var(--ease);
+    display:flex;flex-direction:column;
+  }
+  .card-loop.active{opacity:1;transform:none}
+  .card-loop:not(.active){visibility:hidden}
+  .card-loop .badge{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--brand-1),var(--brand-2));box-shadow:0 14px 30px -12px rgba(0,82,217,.6)}
+  .card-loop h4{font-size:24px;margin:20px 0 0;color:var(--ink-900);letter-spacing:-.01em}
+  .card-loop .desc{color:var(--ink-500);margin-top:10px;font-size:15px}
+  .card-loop .mini{margin-top:auto;display:flex;flex-direction:column;gap:9px;padding-top:22px}
+  .minirow{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-600)}
+  .minirow .b{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--brand-1),var(--brand-2))}
+  .miniline{height:8px;border-radius:99px;background:#eef2f8;overflow:hidden}
+  .miniline i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-1),var(--brand-2))}
+
+  /* ---------- split (copy + screenshot) ---------- */
+  .split{display:grid;grid-template-columns:1fr 1.08fr;gap:54px;align-items:center}
+  .split.rev{grid-template-columns:1.08fr 1fr}
+  .split>*{min-width:0}
+  .section-head{display:flex;align-items:flex-end;gap:40px;margin-bottom:36px}
+  .section-head>div{flex:1}
+  .section-head .lead{max-width:400px;flex:0 0 400px;margin-bottom:3px}
+  .feature-note{margin:22px 0 0;padding:13px 16px;border-left:2px solid var(--brand-1);background:var(--bg-soft);font-size:12px;line-height:1.8;color:var(--ink-500)}
+  .score-dimensions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+  .score-dimensions div{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:12px;color:var(--ink-600);background:#fff}
+  .score-dimensions b{color:var(--brand-2);font-variant-numeric:tabular-nums}
+  .recovery-strip{display:flex;align-items:center;gap:12px;margin-top:24px;color:var(--ink-500);font-size:12px}
+  .recovery-strip b{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink-700)}
+  .checklist{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+  .check{display:flex;gap:13px;align-items:flex-start}
+  .check .ck{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand-1),var(--brand-2));font-size:13px;font-weight:800}
+  .check .tx b{color:var(--ink-900)}
+  .check .tx{color:var(--ink-500);font-size:14.5px}
+
+  /* ---------- features grid ---------- */
+  .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
+  .fcard{border:1px solid var(--line);border-radius:var(--radius);padding:26px;background:#fff;transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s}
+  .fcard:hover{transform:translateY(-4px);box-shadow:0 26px 60px -34px rgba(13,33,73,.34);border-color:#d8e0ee}
+  .fcard .ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(0,164,255,.14),rgba(0,82,217,.12));color:var(--brand-2);font-size:20px}
+  .fcard h4{margin:18px 0 0;font-size:19px;color:var(--ink-900);letter-spacing:-.01em}
+  .fcard p{margin:10px 0 0;color:var(--ink-500);font-size:14.5px}
+
+  /* ---------- roles ---------- */
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:46px}
+  .role{border:1px solid var(--line);border-radius:var(--radius);padding:28px;background:#fff;position:relative;overflow:hidden}
+  .role::before{content:"";position:absolute;left:0;top:0;height:4px;width:100%;background:linear-gradient(90deg,var(--brand-1),var(--brand-2));opacity:.85}
+  .role .r{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-2)}
+  .role h4{margin:10px 0 0;font-size:21px;color:var(--ink-900)}
+  .role p{margin:10px 0 0;color:var(--ink-500);font-size:14.5px}
+  .role ul{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+  .role li{font-size:13.5px;color:var(--ink-700);display:flex;gap:9px;align-items:center}
+  .role li::before{content:"";width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--brand-1),var(--brand-2))}
+
+  /* ---------- CTA ---------- */
+  .cta{margin:90px auto;max-width:var(--maxw)}
+  .cta-inner{position:relative;border-radius:30px;overflow:hidden;padding:74px 40px;text-align:center;color:#fff;
+    background:linear-gradient(135deg,var(--brand-2),#003a9e 60%,#06203f);}
+  .cta-inner .glow{position:absolute;inset:0;background:
+    radial-gradient(600px 300px at 20% 0%,rgba(0,164,255,.5),transparent 60%),
+    radial-gradient(600px 320px at 90% 110%,rgba(0,164,255,.32),transparent 60%);}
+  .cta-inner h3{position:relative;font-size:clamp(28px,4vw,46px);font-weight:800;letter-spacing:-.02em;margin:0;word-break:keep-all;text-wrap:balance}
+  .cta-inner p{position:relative;margin:16px auto 0;max-width:none;color:rgba(255,255,255,.82);font-size:17px;white-space:nowrap}
+  .cta-inner .delivery-note{font-size:12px;color:rgba(255,255,255,.65);margin-top:20px}
+  .cta-inner .actions{position:relative;margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn.white{background:#fff;color:var(--brand-2);border-color:#fff}
+  .btn.outline{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+  .btn.outline:hover{border-color:#fff}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:44px 0;color:var(--ink-400);font-size:13px}
+  .foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .foot .brand{color:var(--ink-700)}
+  .foot .sp{margin-left:auto}
+
+  /* ---------- Agent × Skills ---------- */
+  .future{padding:104px 0}
+  .fpanel{position:relative;border-radius:30px;overflow:hidden;color:#e8f0ff;
+    background:
+      radial-gradient(130% 150% at 88% -10%, rgba(0,150,255,.22), transparent 45%),
+      radial-gradient(130% 150% at 0% 110%, rgba(124,82,255,.22), transparent 50%),
+      linear-gradient(135deg,#050a1c,#03060f 58%,#070a1e);
+    border:1px solid rgba(90,170,255,.24);
+    box-shadow:0 50px 130px -50px rgba(0,6,26,.92), inset 0 1px 0 rgba(150,190,255,.1);}
+  .fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .fx .gridf{position:absolute;inset:0;opacity:.4;
+    background-image:linear-gradient(rgba(60,200,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(60,200,255,.14) 1px,transparent 1px);
+    background-size:42px 42px;
+    -webkit-mask-image:radial-gradient(760px 420px at 72% 16%,#000,transparent 75%);
+    mask-image:radial-gradient(760px 420px at 72% 16%,#000,transparent 75%);}
+  .fx .glow1,.fx .glow2{position:absolute;border-radius:50%;filter:blur(64px)}
+  .fx .glow1{width:420px;height:420px;left:-90px;top:-70px;background:radial-gradient(circle,rgba(0,200,255,.5),transparent 62%)}
+  .fx .glow2{width:520px;height:520px;right:-130px;bottom:-170px;background:radial-gradient(circle,rgba(138,92,255,.42),transparent 62%)}
+  .flay{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:44px;padding:44px;align-items:center}
+  .future .eyebrow{color:#5ee7ff}
+  .future h2{font-size:clamp(28px,4vw,46px);line-height:1.14;letter-spacing:-.02em;font-weight:800;color:#fff;margin:14px 0 0;word-break:keep-all;text-wrap:balance}
+  .future .lead{color:#a9c0ea;margin-top:16px;max-width:46ch}
+  .future .boundary{margin-top:22px;color:#9fb6e0;font-size:12px;line-height:1.8;border-top:1px solid rgba(140,180,255,.2);padding-top:18px}
+  .skill-preview{margin-top:64px}
+  .agent-signature{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .agent-signature picture{width:76px;height:76px;flex:none}
+  .agent-signature p{margin:5px 0 0;font-size:12px;color:#9fb6e0}
+  .agent-mark{display:block}
+  .agent-mark img{width:100%;height:100%;object-fit:contain}
+  .arrow-map{margin-top:22px;display:inline-flex;align-items:center;gap:12px;font-size:13px;color:#9fb6e0}
+  .arrow-map b{color:#eaf3ff}
+  .arrow-map .ar{color:#5ad1ff;font-weight:800}
+
+  .skillcloud{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;max-width:460px}
+  .skill{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:11px;font-size:12px;letter-spacing:.01em;
+    border:1px solid rgba(140,180,255,.22);color:#bcd0f5;background:rgba(140,180,255,.06);
+    transition:border-color .4s,color .4s,background .4s,box-shadow .4s,transform .4s}
+  .skill .pt{width:6px;height:6px;border-radius:50%;background:#5b7bb5;transition:.4s}
+  .skillcloud .skill{animation:floaty 5s var(--ease) infinite}
+  .skillcloud .skill:nth-child(2n){animation-delay:.8s}
+  .skillcloud .skill:nth-child(3n){animation-delay:1.6s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .skill.on{border-color:rgba(70,225,255,.75);color:#f2fbff;transform:translateY(-1px);
+    background:linear-gradient(135deg,rgba(0,205,255,.34),rgba(138,92,255,.3));
+    box-shadow:0 0 0 1px rgba(70,225,255,.4),0 10px 30px -8px rgba(60,180,255,.6),0 0 22px -2px rgba(140,90,255,.55)}
+  .skill.on .pt{background:#3ee9ff;box-shadow:0 0 10px #3ee9ff}
+
+  /* Product Agent window: original orb, white surface and blue user messages. */
+  .agent-showcase{width:420px;justify-self:end;max-width:100%}
+  .agent-stage{position:relative;height:620px}
+  .console{position:relative;display:flex;flex-direction:column;width:100%;height:620px;overflow:hidden;background:#fff;border:1px solid #dae3f1;border-radius:18px;box-shadow:0 22px 65px -15px #1b39774a,0 2px 12px #21376512;color:#1e293b}
+  .agent-window-actions{position:absolute;z-index:2;top:9px;right:9px;display:flex;gap:2px;padding:3px;border:1px solid #e1e8f2;border-radius:9px;background:#ffffffd9;box-shadow:0 4px 14px #1b39771a;backdrop-filter:blur(8px)}
+  .agent-window-actions button{display:grid;place-items:center;width:29px;height:29px;border:0;border-radius:7px;background:transparent;color:#7a899f;cursor:pointer}
+  .agent-window-actions button:hover{background:#eaf0fa;color:#0052d9}
+  .agent-window-actions svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.7;fill:none}
+  .console .cbody{flex:1;min-height:0;overflow-y:auto;padding:52px 18px 16px;background:radial-gradient(ellipse at top left,#f7faff,transparent 60%);scrollbar-width:thin}
+  .agent-welcome{padding:13px 4px 8px;text-align:center}
+  .agent-welcome .agent-mark{width:88px;height:88px;margin:0 auto 15px}
+  .agent-welcome h3{margin:7px 0 8px;font-size:21px;font-weight:650;letter-spacing:-.7px;color:#243753}
+  .agent-prompts{display:grid;gap:7px;margin-top:28px;text-align:left}
+  .agent-prompts button{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #e6ecf6;border-radius:8px;background:#fff;color:#7d8ea8;font-size:11px;text-align:left;cursor:pointer}
+  .agent-prompts button:hover{background:#f6faff;border-color:#acc8f3;color:#0052d9}
+  .agent-prompts svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6}
+  .agent-prompts .prompt-arrow{margin-left:auto}
+  .agent-new-chat{padding:0;margin:0 0 18px;border:0;background:transparent;color:#7d8ea8;font-size:11px;cursor:pointer}
+  .agent-new-chat:hover{color:#0052d9}
+  .cp-row{display:flex;gap:11px;opacity:0;transform:translateY(8px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+  .cp-row.show{opacity:1;transform:none}
+  #cp-row-user{justify-content:flex-end;margin-bottom:22px}
+  .cp-bubble.user{max-width:80%;padding:12px 14px;font-size:12px;line-height:1.85;border:1px solid #0052d9;border-radius:12px 3px 12px 12px;background:#0052d9;color:#fff}
+  .agent-message-label{display:flex;align-items:center;gap:5px;margin-bottom:7px;color:#7a879c;font-size:12px;font-weight:600}
+  .agent-message-label .agent-mark{width:28px;height:28px;flex:none}
+  .cp-skills{min-width:0;margin-left:auto}
+  .console .skill{display:none}
+  .console .skill.on{display:inline-flex;max-width:185px;border:0;border-radius:3px;padding:2px 5px;font-size:9px;color:#9a86b6;background:#f5f0fd;box-shadow:none;transform:none}
+  .console .skill.on::before{display:none}
+  .console .skill .pt{display:none}
+  .cp-reply{min-height:112px;margin:0;padding:12px 14px;font-size:12px;line-height:1.85;opacity:0;transform:translateY(6px);transition:opacity .5s var(--ease),transform .5s var(--ease);border:1px solid #e8edf5;border-radius:3px 12px 12px 12px;background:#f8fafc;color:#516079}
+  .cp-reply.show{opacity:1;transform:none}
+  .agent-compose{flex:none;padding:12px 15px 18px;background:#fff}
+  .agent-composer-preview{padding:11px 11px 7px;border:1px solid #dfe6f1;border-radius:12px;background:#fcfdff;color:#a2afc1;font-size:12px}
+  .agent-composer-preview>span{display:block;min-height:52px}
+  .agent-composer-tools{display:flex;justify-content:flex-end;margin-top:5px}
+  .agent-composer-tools span{display:grid;place-items:center;width:29px;height:29px;border-radius:8px;background:#e5ecf7;color:#a0b3d0;font-size:20px}
+  .agent-closed{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#a9c0ea;font-size:13px}
+  .agent-launcher{border:0;padding:0;background:transparent;border-radius:50%;cursor:pointer}
+  .agent-launcher .agent-mark{width:112px;height:112px}
+  .agent-launcher:hover{filter:drop-shadow(0 0 24px #72c5ff60)}
+  .agent-preview-note{margin:12px 0 0;color:#9fb6e0;font-size:11px;text-align:center}
+  .demo-controls{display:flex;justify-content:center;gap:7px;margin-top:16px}
+  .demo-controls button{border:1px solid rgba(140,180,255,.24);color:#cfe0ff;background:rgba(140,180,255,.08);padding:6px 10px;font-size:11px;border-radius:7px;cursor:pointer}
+  .demo-controls button[aria-pressed="true"]{border-color:#5ad1ff;color:#5ad1ff}
+
+  /* Ambient backdrop */
+  .fx .dots{position:absolute;inset:0;opacity:.55;
+    background-image:radial-gradient(rgba(90,220,255,.6) 1px,transparent 1.5px);background-size:34px 34px;
+    -webkit-mask-image:radial-gradient(720px 400px at 28% 82%,#000,transparent 70%);
+    mask-image:radial-gradient(720px 400px at 28% 82%,#000,transparent 70%);
+    animation:drift 22s linear infinite}
+  @keyframes drift{0%{background-position:0 0}100%{background-position:34px 68px}}
+  .fpanel::before{content:"";position:absolute;inset:-40%;z-index:0;pointer-events:none;opacity:.5;
+    background:conic-gradient(from 0deg at 70% 30%, transparent 0deg, rgba(0,200,255,.2) 55deg, transparent 130deg, rgba(138,92,255,.2) 210deg, transparent 300deg);
+    animation:spin 26s linear infinite}
+  @keyframes spin{to{transform:rotate(1turn)}}
+  .flay{z-index:1}
+  .future h2{text-shadow:0 0 34px rgba(0,180,255,.3),0 0 60px rgba(138,92,255,.18)}
+  .future .eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.18em}
+  /* shimmer sweep when a skill activates */
+  .skill.on::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.5),transparent 72%);
+    transform:translateX(-130%);animation:sweep .9s var(--ease)}
+  @keyframes sweep{to{transform:translateX(130%)}}
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1!important;transform:none!important}
+    html{scroll-behavior:auto}
+    *,*::before,*::after{transition:none!important}
+    .fx .dots,.fpanel::before,.skill.on::before,.skillcloud .skill{animation:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <span class="logo">E</span>
+      <span>EA Platform<small>Engineering Portal</small></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#showcase">产品总览</a>
+      <a href="#loop">工作闭环</a>
+      <a href="#structure">协作分析</a>
+      <a href="#score">Case 得分</a>
+      <a href="#recovery">整改跟踪</a>
+      <a href="#copilot">Agent · Skills</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn primary" href="demo/V1.1.2.html" target="_blank" rel="noopener">体验原型 →</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="bg"></div>
+  <div class="grid"></div>
+  <div class="wrap hero-intro"><div>
+    <span class="pill"><span class="dot"></span> EA V1.1.2 · 工程知识平台</span>
+    <h1>让专家经验成为资产，构建<span class="grad-text">新护城河</span>。</h1>
+    <p class="sub">把判断的依据留在 Case 里，让下一位工程师遇到相似问题时，能从团队上一次的发现出发。</p>
+    <div class="actions">
+      <a class="btn primary" href="demo/V1.1.2.html" target="_blank" rel="noopener">体验 V1.1.2 原型 →</a>
+      <a class="btn ghost" href="#showcase">看看现在的 EA ↓</a>
+    </div>
+    <div class="note">桌面端产品原型 · 支持离线体验</div>
+    </div>
+    <aside class="case-stat" aria-labelledby="case-label" data-source="case-stats.json">
+      <small>EA / CASE LIBRARY</small><h2 id="case-label">已记录的 Case</h2>
+      <strong class="digits" aria-hidden="true">38</strong>
+      <div role="status"><span id="case-total">38</span><p id="case-source">演示快照 · V1.1.2 分析中心</p></div>
+    </aside>
+  </div>
+
+  <!-- V1.1.2 product views -->
+  <div class="wrap showcase" id="showcase">
+    <div class="showcase-tabs" role="tablist" aria-label="V1.1.2 产品视图">
+      <button id="tab-analysis" type="button" role="tab" aria-selected="true" aria-controls="panel-analysis">分析中心</button>
+      <button id="tab-tasks" type="button" role="tab" aria-selected="false" aria-controls="panel-tasks" tabindex="-1">我的任务</button>
+      <button id="tab-board" type="button" role="tab" aria-selected="false" aria-controls="panel-board" tabindex="-1">部门视角</button>
+      <button id="tab-product" type="button" role="tab" aria-selected="false" aria-controls="panel-product" tabindex="-1">产品视角</button>
+    </div>
+    <div class="frame hero-mock" id="mock">
+      <div class="barwin">
+        <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+        <span class="url" id="showcase-label">EA V1.1.2 / 分析中心</span>
+      </div>
+      <div id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" tabindex="0">
+        <img src="assets/v112-analysis.png" alt="分析中心：浏览全部 Case、近期新增及热门排行" width="1440" height="960" loading="eager" />
+      </div>
+      <div id="panel-tasks" role="tabpanel" aria-labelledby="tab-tasks" tabindex="0" hidden>
+        <img src="assets/v112-tasks.png" alt="我的任务：区分待接受、进行中、等待中与已完成任务" width="1440" height="960" loading="lazy" />
+      </div>
+      <div id="panel-board" role="tabpanel" aria-labelledby="tab-board" tabindex="0" hidden>
+        <img src="assets/v112-board.png" alt="万能看板部门视角：按组织与人员身份查看参与的 Case、任务及处理周期" width="1440" height="960" loading="lazy" />
+      </div>
+      <div id="panel-product" role="tabpanel" aria-labelledby="tab-product" tabindex="0" hidden>
+        <img src="assets/v112-product.png" alt="万能看板产品视角：从结案周期趋势、部门任务耗时占比定位高耗时 Case" width="1440" height="960" loading="lazy" />
+      </div>
+    </div>
+    <p class="shot-note">V1.1.2 原型实拍 · 从分析中心找到 Case，在万能看板按部门看协作、按产品看耗时。</p>
+  </div>
+</section>
+
+<!-- WHY EA · 痛点 → EA 对比 -->
+<section class="sec" id="value">
+  <div class="wrap">
+    <span class="eyebrow reveal">为什么是 EA</span>
+    <h2 class="htitle reveal d1">一个人的判断，成为一群人的起点。</h2>
+    <p class="sub reveal d2">测试工程师留下失效条件，设计工程师读到同一份证据，就能用另一套专业知识解释它。当不同专长的人能复查、借鉴彼此的判断，团队就有机会解决单个专家解不开的问题。</p>
+    <div class="v4 reveal d2">
+      <div class="head"><div class="l">过去 · 没有 EA</div><div class="r">现在 · 用 EA</div></div>
+      <div class="vrow">
+        <div class="cell l"><span class="x">✕</span> 工程信息散落在邮件、Excel 与各系统之间</div>
+        <div class="cell r"><span class="ck">✓</span><span>以 <b>Case</b> 为单位统一收拢，全流程留痕可追溯</span></div>
+      </div>
+      <div class="vrow">
+        <div class="cell l"><span class="x">✕</span> 问题靠个人经验，debug 难以复用</div>
+        <div class="cell r"><span class="ck">✓</span><span><b>怀疑方向 → 验证任务 → 证据与结论</b>，保留每条分析路径</span></div>
+      </div>
+      <div class="vrow">
+        <div class="cell l"><span class="x">✕</span> 任务分派口头化，进度与归属不透明</div>
+        <div class="cell r"><span class="ck">✓</span><span><b>我负责 / 我分派</b>分开跟进，脑图、任务视图与甘特图协同查看</span></div>
+      </div>
+      <div class="vrow">
+        <div class="cell l"><span class="x">✕</span> 结案之后，记录质量与整改进展难以跟进</div>
+        <div class="cell r"><span class="ck">✓</span><span><b>Case 得分与整改清单</b>，从发现缺口到补齐记录</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PINNED CLOSED-LOOP -->
+<section id="loop">
+  <div class="pin-wrap" id="pinwrap">
+    <div class="pin">
+      <div class="wrap loop">
+        <div class="copy">
+          <span class="eyebrow">闭环管理 · CLOSED LOOP</span>
+          <h3 id="loop-title">记录问题</h3>
+          <p id="loop-desc">把问题现象、背景与影响范围写进 Case，明确产品、Owner、L0–L3 等级与紧急度，让协作从同一份事实开始。</p>
+          <div class="stepnums">
+            <div class="n"><i data-step="0"></i></div>
+            <div class="n"><i data-step="1"></i></div>
+            <div class="n"><i data-step="2"></i></div>
+            <div class="n"><i data-step="3"></i></div>
+          </div>
+        </div>
+        <div class="stage" id="stage">
+          <div class="card-loop active" data-card="0">
+            <div class="badge">01</div>
+            <h4>建立 Case · 先对齐事实</h4>
+            <div class="desc">以「DDR5 X-die CP1 yield drop @Site A」为例，记录异常现象、物料与测试条件，说明为什么发起、影响什么，再确定协作人员。</div>
+            <div class="mini">
+              <div class="minirow"><span class="b"></span> 产品问题建立 Case，日常事务使用自由任务</div>
+              <div class="minirow"><span class="b"></span> 等级 L0–L3 与紧急度分别表达影响和优先程度</div>
+              <div class="miniline"><i style="width:25%"></i></div>
+            </div>
+          </div>
+          <div class="card-loop" data-card="1">
+            <div class="badge">02</div>
+            <h4>拆解思路 · 分派验证</h4>
+            <div class="desc">先列怀疑方向，再挂载具体执行任务。把 Pattern、工艺与物理失效等路径分派给对应工程师，任务接受、执行与结果都有归属。</div>
+            <div class="mini">
+              <div class="minirow"><span class="b"></span> 脑图看路径，任务视图看分工，甘特图看时间</div>
+              <div class="minirow"><span class="b"></span> 从「我的任务」接受分派、进入 Workspace</div>
+              <div class="miniline"><i style="width:55%"></i></div>
+            </div>
+          </div>
+          <div class="card-loop" data-card="2">
+            <div class="badge">03</div>
+            <h4>保留证据 · 确认根因</h4>
+            <div class="desc">在 Workspace 中记录分析过程、结论与附件，区分有效和无效路径。确认根因归属后进入验证，按需要向相关产品发起 Fanout。</div>
+            <div class="mini">
+              <div class="minirow"><span class="b"></span> 结论与过程证据保存在原 Case / 任务文档</div>
+              <div class="minirow"><span class="b"></span> 关联或标记重复 Case，不自动合并原始数据</div>
+              <div class="miniline"><i style="width:78%"></i></div>
+            </div>
+          </div>
+          <div class="card-loop" data-card="3">
+            <div class="badge">04</div>
+            <h4>验证结案 · 持续整改</h4>
+            <div class="desc">验证完成后提交结案结论，保留验证起止时间。已结案 Case 若需补充验证，可由监管范围内的管理者退回整改，结果仍回到原文档。</div>
+            <div class="mini">
+              <div class="minirow"><span class="b"></span> 新发起的 Case 整改固定 24 小时期限</div>
+              <div class="minirow"><span class="b"></span> 要求、实质修改与提交快照持续留痕</div>
+              <div class="miniline"><i style="width:100%"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRUCTURE / real mind map -->
+<section class="sec soft" id="structure">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <span class="eyebrow reveal">协作分析 · 思路与执行分开，路径与证据相连</span>
+        <h2 class="htitle reveal d1">不只知道谁在做，<br/>更知道为什么做。</h2>
+        <p class="lead reveal d2">用「怀疑方向 + 执行任务」组织分析树。保留已经排除的路径，也看清下一步该验证什么；多人协作，不再丢失分析上下文。</p>
+        <div class="checklist">
+          <div class="check reveal d2"><span class="ck">✓</span><span class="tx"><b>三种视图，同一份任务</b>　思维导图看路径、任务视图看分工、甘特图看实际执行时间。</span></div>
+          <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>按需聚焦</b>　全局、未完成、有效路径、只看我的，让复杂分析树变得可读。</span></div>
+          <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>有据可查</b>　过程、结论和附件留在 Workspace；记录创建、接受开始与完成节点。</span></div>
+          <div class="check reveal d4"><span class="ck">✓</span><span class="tx"><b>直接用于评审</b>　演示模式沿节点讲解，少一次整理，多一份完整上下文。</span></div>
+        </div>
+      </div>
+      <div class="frame reveal d2">
+        <div class="barwin">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="url">EA V1.0.9 / 思维导图 · 全屏</span>
+        </div>
+        <img src="assets/v109-mindmap.png" alt="V1.0.9 全屏思维导图：怀疑方向、嵌套执行任务、结论有效性与附件" width="1440" height="960" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE RECORD COMPLETENESS -->
+<section class="sec" id="score">
+  <div class="wrap">
+    <div class="split rev">
+      <div class="frame reveal d1">
+        <div class="barwin">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="url">EA V1.0.9 / Case 得分依据</span>
+        </div>
+        <img src="assets/v109-score.png" alt="V1.0.9 Case 得分：详情内查看六维雷达图、各维度权重及当前记录依据" width="1440" height="960" loading="lazy" />
+      </div>
+      <div>
+        <span class="eyebrow reveal">CASE 得分 · 六维记录完整度</span>
+        <h2 class="htitle reveal d1">每一个分数，<br/>都能找到记录依据。</h2>
+        <p class="lead reveal d2">不只看“做完了多少”，也看“留下了什么”。从背景、过程到证据与结论，六个维度帮助发现记录缺口；在详情中展开雷达图，直接查看权重与计算依据。</p>
+        <div class="score-dimensions reveal d2">
+          <div>案件背景 <b>20%</b></div><div>分析过程 <b>20%</b></div><div>证据记录 <b>15%</b></div>
+          <div>结论沉淀 <b>20%</b></div><div>任务闭环 <b>15%</b></div><div>分工明确 <b>10%</b></div>
+        </div>
+        <div class="checklist">
+          <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>同一套口径</b>　详情、全部 Case 列表和热门 / 关注度排行读取同一得分。</span></div>
+          <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>随记录更新</b>　保存过程、结论或附件后重新计算，缺失项不补造分数。</span></div>
+        </div>
+        <p class="feature-note reveal d4">当前为原型试算，反映记录完整度，不代表结论正确性或绩效评价。正式评分标准待业务确认。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECOVERY -->
+<section class="sec" id="recovery">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow reveal">监管整改 · 让反馈回到原文档</span>
+        <h2 class="htitle reveal d1">结案不是记录的终点。</h2>
+      </div>
+      <p class="lead reveal d2">从「我的任务 → 我发起的整改」跟进本人发起的 Case 与 Case 任务整改。要求、期限、修改和结果，始终有迹可循。</p>
+    </div>
+    <div class="split rev">
+      <div class="frame reveal">
+        <div class="barwin"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="url">EA V1.0.9 / 我发起的整改</span></div>
+        <img src="assets/v109-recovery.png" alt="V1.0.9 林副总整改示例：整改中、已整改、超期统计，以及原要求、截止日期与反馈摘要" width="1440" height="900" loading="lazy" />
+      </div>
+      <div>
+        <div class="checklist">
+          <div class="check reveal d1"><span class="ck">✓</span><span class="tx"><b>明确责任与期限</b>　已结案 Case 可按监管范围退回；新发起的 Case 整改固定为提交后 24 小时。</span></div>
+          <div class="check reveal d2"><span class="ck">✓</span><span class="tx"><b>三种状态，一份清单</b>　整改中、已整改、超期互不重复，点击统计卡片筛选，标题直达原文档。</span></div>
+          <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>修改与结果可追溯</b>　保存实际修改才计入处理中；提交保留前后快照，查看反馈不改变业务状态。</span></div>
+        </div>
+        <div class="recovery-strip reveal d3"><b>提出要求</b><span>→</span><b>修改原文档</b><span>→</span><b>提交反馈</b></div>
+        <p class="feature-note reveal d4">“已整改”表示已提交反馈，不等于管理者验收。结案审批独立进行；Case 内任务沿用自身期限规则。提醒为页面内计算，非后台消息推送。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLABORATION -->
+<section class="sec soft" id="collaboration">
+  <div class="wrap split">
+    <div>
+      <span class="eyebrow reveal">协作连接 · 找到人，也保留完整上下文</span>
+      <h2 class="htitle reveal d1">关键参与者一眼可见，<br/>协作名单不遗漏。</h2>
+      <p class="lead reveal d2">全部 Case 列表在 Owner 后呈现最多两位核心参与者，帮助快速识别当前协作关系。需要沟通时，管理者可在 Case 详情体验 HEMS 建群与参与人补充流程。</p>
+      <div class="checklist">
+        <div class="check reveal d2"><span class="ck">✓</span><span class="tx"><b>核心参与者</b>　结合当前 Case 的任务与记录识别协作人员，不作为绩效排名。</span></div>
+        <div class="check reveal d3"><span class="ck">✓</span><span class="tx"><b>按完整名单建群</b>　首次包含操作管理者、Owner 与完整参与人，不受列表两人展示上限影响。</span></div>
+        <div class="check reveal d4"><span class="ck">✓</span><span class="tx"><b>后续增量补充</b>　只补充新增或上次失败的人员，无需重复加入已有成员。</span></div>
+      </div>
+      <p class="feature-note reveal d4">HEMS 建群仅向主管、总监、VP 展示入口。当前为本地群组模拟，尚未连接 HEMS，不会实际建群或发送邀请。</p>
+    </div>
+    <div class="frame reveal d2">
+      <div class="barwin"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="url">EA V1.0.9 / HEMS 群组 · 本地演示</span></div>
+      <img src="assets/v109-hems.png" alt="V1.0.9 HEMS 本地群组演示：已加入与待加入人员分开显示，按需补充参与人" width="1440" height="900" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="sec" id="roles">
+  <div class="wrap">
+    <span class="eyebrow reveal">一个平台 · 三种视角</span>
+    <h2 class="htitle reveal d1">工程师、Case Owner、管理者，各取所需。</h2>
+    <div class="roles">
+      <div class="role reveal d1">
+        <div class="r">Engineer</div>
+        <h4>执行工程师</h4>
+        <p>从「我的任务」出发，把 Case 分析任务与日常自由任务分开处理。</p>
+        <ul>
+          <li>我负责 / 我分派，两种视角跟进</li>
+          <li>接受任务，在 Workspace 记录过程与结论</li>
+          <li>我的关注与智能汇总，集中查看工作记录</li>
+        </ul>
+      </div>
+      <div class="role reveal d2">
+        <div class="r">Case Owner</div>
+        <h4>Case 负责人</h4>
+        <p>串联问题背景、分析路径、执行分工与结论，推动验证和结案。</p>
+        <ul>
+          <li>思维导图 / 任务视图 / 甘特图</li>
+          <li>根因归属、Fanout 与验证起止记录</li>
+          <li>六维 Case 得分，发现记录缺口</li>
+        </ul>
+      </div>
+      <div class="role reveal d3">
+        <div class="r">Manager</div>
+        <h4>部门管理者</h4>
+        <p>从产品与 Case 总览发现改进方向，在监管范围内持续跟进整改。</p>
+        <ul>
+          <li>从万能看板的产品视角定位高耗时 Case</li>
+          <li>我发起的整改，追踪期限和提交反馈</li>
+          <li>HEMS 建群与增量补充参与人演示</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EA AGENT × SKILLS -->
+<section class="future" id="copilot">
+  <div class="wrap">
+    <div class="fpanel reveal">
+      <div class="fx">
+        <div class="gridf"></div>
+        <div class="dots"></div>
+        <div class="glow1"></div>
+        <div class="glow2"></div>
+      </div>
+      <div class="flay">
+        <!-- left copy -->
+        <div>
+          <div class="agent-signature">
+            <picture class="agent-mark">
+              <source media="(prefers-reduced-motion: reduce)" srcset="assets/v109-agent-poster.gif" />
+              <img src="assets/v109-agent.gif" alt="EA Agent 蓝紫流动光球" width="112" height="112" loading="lazy" />
+            </picture>
+            <div><span class="eyebrow">EA AGENT × SKILLS</span><p>随时唤起 · 在当前工作中对话</p></div>
+          </div>
+          <h2>让工程经验，<br/>走向可调用的能力。</h2>
+          <p class="lead">从悬浮助手到完整对话页，从技能选择到专属工作区。V1.0.9 把 Agent 与技能中心连接起来，让分析指引、文档组织与日报管理有统一入口。</p>
+          <div class="arrow-map"><b>工程经验</b> <span class="ar">→</span> <b>Skill</b> <span class="ar">→</span> <b>对话与工作区</b></div>
+          <div class="skillcloud" id="cp-cloud">
+            <span class="skill"><span class="pt"></span>日报管理</span>
+            <span class="skill"><span class="pt"></span>FSA 失效模式自动归类</span>
+            <span class="skill"><span class="pt"></span>测试程式 timing 体检</span>
+            <span class="skill"><span class="pt"></span>良率异常波动预警</span>
+            <span class="skill"><span class="pt"></span>EA 知识库智能问答</span>
+          </div>
+          <p class="boundary">当前：本地规则回复与示例文件，未接入真实 AI、知识检索或业务执行。<br/>后续方向：连接真实工具与企业系统，让 Skills 在 Workspace / Copilot 中被调用。</p>
+        </div>
+
+        <!-- Product-style Agent window -->
+        <div class="agent-showcase">
+          <div class="agent-stage" id="agent-stage">
+            <div class="console" id="cp-console" role="region" aria-label="EA Agent 小窗演示">
+              <div class="agent-window-actions">
+                <button type="button" id="agent-expand" aria-label="查看 Agent 完整页实拍" title="查看 Agent 完整页实拍"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7" /></svg></button>
+                <button type="button" id="agent-minimize" aria-label="收起 EA Agent" title="收起为光球"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg></button>
+              </div>
+              <div class="cbody">
+                <div class="agent-welcome" id="agent-welcome">
+                  <picture class="agent-mark">
+                    <source media="(prefers-reduced-motion: reduce)" srcset="assets/v109-agent-poster.gif" />
+                    <img src="assets/v109-agent.gif" alt="" width="112" height="112" loading="lazy" />
+                  </picture>
+                  <h3>Hi，EA有什么可以帮您？</h3>
+                  <div class="agent-prompts" aria-label="常用问题演示">
+                    <button type="button" data-question="0"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M9 9h6M9 13h6M9 17h4" /></svg><span>帮我统计我的部门当前的Case状态与风险情况</span><span class="prompt-arrow" aria-hidden="true">↗</span></button>
+                    <button type="button" data-question="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3L2 21h20L12 3zM12 9v5M12 17v1" /></svg><span>G5平台当前有什么问题？</span><span class="prompt-arrow" aria-hidden="true">↗</span></button>
+                    <button type="button" data-question="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H5v20h14V7l-5-5zM14 2v6h5M8 12h8M8 16h8" /></svg><span>DDJOC产品有多少case，什么进展？</span><span class="prompt-arrow" aria-hidden="true">↗</span></button>
+                    <button type="button" data-question="3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h8M4 20h8M17 14v8M13 18h8" /></svg><span>Fail stage在FT阶段的问题有哪些？</span><span class="prompt-arrow" aria-hidden="true">↗</span></button>
+                  </div>
+                </div>
+                <div id="agent-messages" hidden>
+                  <button type="button" class="agent-new-chat" id="agent-new-chat">← 返回欢迎页</button>
+                  <div class="cp-row show" id="cp-row-user">
+                    <div class="cp-bubble user"><span id="cp-prompt">帮我整理今天的验证记录，准备一份日报。</span></div>
+                  </div>
+                  <div class="agent-message-label">
+                    <picture class="agent-mark">
+                      <source media="(prefers-reduced-motion: reduce)" srcset="assets/v109-agent-poster.gif" />
+                      <img src="assets/v109-agent.gif" alt="" width="112" height="112" loading="lazy" />
+                    </picture>
+                    <span>EA Agent</span>
+                    <div class="cp-skills" id="cp-skills"></div>
+                  </div>
+                  <p class="cp-reply show" id="cp-reply">可以按已完成事项、进行中事项、风险与下一步组织日报。请提供当天的工作笔记，再核对事实与日期。此处为本地指引，未读取记录、保存文档或推送结果。</p>
+                </div>
+              </div>
+              <div class="agent-compose">
+                <div class="agent-composer-preview" role="img" aria-label="原型输入框样式预览；本页请使用常用问题或演示场景">
+                  <span>请输入...</span><div class="agent-composer-tools"><span aria-hidden="true">↑</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="agent-closed" id="agent-closed" hidden>
+              <button type="button" class="agent-launcher" id="agent-launcher" aria-label="打开 EA Agent 对话" aria-controls="cp-console" aria-expanded="false">
+                <picture class="agent-mark">
+                  <source media="(prefers-reduced-motion: reduce)" srcset="assets/v109-agent-poster.gif" />
+                  <img src="assets/v109-agent.gif" alt="" width="112" height="112" loading="lazy" />
+                </picture>
+              </button>
+              <span>点击光球，继续对话</span>
+            </div>
+          </div>
+          <div class="demo-controls" id="agent-demo-controls" aria-label="选择 Agent 演示场景">
+            <button type="button" data-scene="0" aria-pressed="false">日报整理</button>
+            <button type="button" data-scene="1" aria-pressed="false">失效分析</button>
+            <button type="button" data-scene="2" aria-pressed="false">程式检查</button>
+            <button type="button" id="demo-pause" aria-pressed="false">暂停演示</button>
+          </div>
+          <p class="agent-preview-note">产品同款光球与小窗 · 本地指引演示 · 输入框为样式预览</p>
+        </div>
+      </div>
+    </div>
+    <div class="split rev skill-preview">
+      <div class="frame reveal">
+        <div class="barwin"><span class="tl r"></span><span class="tl y"></span><span class="tl g"></span><span class="url">EA V1.0.9 / 技能中心</span></div>
+        <img src="assets/v109-skills.png" alt="V1.0.9 技能中心：日报管理、知识问答、失效归类、timing 体检和良率预警五个示例技能" width="1440" height="960" loading="lazy" />
+      </div>
+      <div>
+        <span class="eyebrow reveal" style="color:var(--brand-2)">技能中心 · 从入口走进工作区</span>
+        <h3 class="htitle reveal d1">找到适合当前工作的 Skill。</h3>
+        <p class="lead reveal d2" style="color:var(--ink-500)">按分类、名称、作者或标签查找技能。选择后进入 Agent 对话，或打开对应工作区；日报管理支持按日期组织会话、合并笔记和整理文档。</p>
+        <p class="feature-note reveal d3">技能名称表达目标用途，不代表真实分析服务已上线。当前原型可体验选择、对话和工作区流程；截图内引用次数、评分与分析内容均为示例。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta" id="cta">
+  <div class="wrap">
+    <div class="cta-inner reveal">
+      <div class="glow"></div>
+      <h3>通用能力可以买到，自己的判断要靠积累。</h3>
+      <p>在行业通用方法之上，每个 Case 都能留下企业自己的知识、产品上下文，以及团队如何权衡风险、坚持什么质量标准。这些选择体现了企业的文化和理念，也是竞争者难以复制的部分。</p>
+      <div class="actions">
+        <a class="btn white" href="demo/V1.1.2.html" target="_blank" rel="noopener">体验 V1.1.2 原型 →</a>
+        <a class="btn outline" href="#showcase">回看产品总览 ↑</a>
+      </div>
+      <p class="delivery-note">离线前端原型 · 无生产后端连接 · AI / HEMS 为本地演示 · 不代表正式上线服务</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <span class="logo" style="width:24px;height:24px;border-radius:7px;font-size:13px">E</span>
+    <span class="brand">EA Platform · V1.1.2</span>
+    <span class="sp">© 2026 Easy Analysis · Supported by AIX</span>
+  </div>
+</footer>
+
+<dialog class="shot-dialog" id="shot-dialog" aria-labelledby="shot-title">
+  <header><span id="shot-title">V1.0.9 产品截图</span><button type="button" id="close-shot" autofocus>关闭 · Esc</button></header>
+  <img id="shot-full" alt="" />
+</dialog>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce) document.documentElement.classList.add('motion-ready');
+
+  var nav = document.getElementById('nav');
+  var prog = document.getElementById('progress');
+  function onScroll(){
+    var st = window.scrollY || document.documentElement.scrollTop;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h>0 ? (st/h*100) : 0) + '%';
+    if(st>12) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+
+    pinUpdate();
+  }
+
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.16, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  var pinwrap = document.getElementById('pinwrap');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card-loop'));
+  var bars = Array.prototype.slice.call(document.querySelectorAll('.stepnums .n i'));
+  var titles = cards.map(function(card){
+    return [card.querySelector('h4').textContent, card.querySelector('.desc').textContent];
+  });
+  var loopTitle = document.getElementById('loop-title');
+  var loopDesc = document.getElementById('loop-desc');
+  var current = -1;
+  function pinUpdate(){
+    if(!pinwrap) return;
+    var r = pinwrap.getBoundingClientRect();
+    var total = pinwrap.offsetHeight - window.innerHeight;
+    var p = Math.min(Math.max((-r.top)/total,0),1);
+    var n = cards.length;
+    var idx = Math.min(n-1, Math.floor(p*n));
+    bars.forEach(function(b,i){
+      var seg = p*n - i;
+      b.style.width = Math.min(Math.max(seg,0),1)*100 + '%';
+    });
+    if(idx!==current){
+      current = idx;
+      cards.forEach(function(c,i){ c.classList.toggle('active', i===idx); });
+      loopTitle.textContent = titles[idx][0];
+      loopDesc.textContent = titles[idx][1];
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  cards[0] && cards[0].classList.add('active');
+  onScroll();
+  document.addEventListener('DOMContentLoaded', function(){
+    attachCaseReel(document.getElementById('case-total'), document.querySelector('.case-stat .digits'),
+      () => !matchMedia('(prefers-reduced-motion: reduce)').matches);
+  });
+
+  var tabs = Array.from(document.querySelectorAll('.showcase-tabs [role="tab"]'));
+  function selectTab(tab, focus){
+    tabs.forEach(function(item){
+      var selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+    });
+    document.getElementById('showcase-label').textContent = 'EA V1.1.2 / ' + tab.textContent;
+    if(focus) tab.focus();
+  }
+  tabs.forEach(function(tab, index){
+    tab.addEventListener('click', function(){ selectTab(tab, false); });
+    tab.addEventListener('keydown', function(event){
+      var next;
+      if(event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      if(event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+      if(event.key === 'Home') next = 0;
+      if(event.key === 'End') next = tabs.length - 1;
+      if(next !== undefined){ event.preventDefault(); selectTab(tabs[next], true); }
+    });
+  });
+
+  var dialog = document.getElementById('shot-dialog');
+  var fullImage = document.getElementById('shot-full');
+  document.querySelectorAll('.frame').forEach(function(frame){
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'image-zoom';
+    button.textContent = '查看大图 ↗';
+    button.setAttribute('aria-label', (frame.id === 'mock' ? '当前产品视图' : frame.querySelector('.url').textContent) + '，查看大图');
+    button.addEventListener('click', function(){
+      var image = Array.from(frame.querySelectorAll('img')).find(function(img){ return !img.closest('[hidden]'); });
+      fullImage.src = image.src;
+      fullImage.alt = image.alt;
+      document.getElementById('shot-title').textContent = frame.querySelector('.url').textContent;
+      dialog.showModal();
+    });
+    frame.appendChild(button);
+  });
+  document.getElementById('close-shot').addEventListener('click', function(){ dialog.close(); });
+  dialog.addEventListener('click', function(event){ if(event.target === dialog) dialog.close(); });
+})();
+</script>
+
+<!-- Local Agent guidance demo; no business actions are executed. -->
+<script>
+(function(){
+  var root = document.getElementById('cp-console');
+  if(!root) return;
+  var promptEl = document.getElementById('cp-prompt');
+  var skillsEl = document.getElementById('cp-skills');
+  var replyEl  = document.getElementById('cp-reply');
+  var userRow  = document.getElementById('cp-row-user');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var SKILLS = ['日报管理','FSA 失效模式自动归类','测试程式 timing 体检'];
+  skillsEl.innerHTML = SKILLS.map(function(s,i){
+    return '<span class="skill" data-i="'+i+'"><span class="pt"></span>'+s+'</span>';
+  }).join('');
+  var chips = Array.prototype.slice.call(skillsEl.querySelectorAll('.skill'));
+
+  var SCENES = [
+    { q:'帮我整理今天的验证记录，准备一份日报。', sk:0,
+      a:'可以按已完成事项、进行中事项、风险与下一步组织日报。请提供当天的工作笔记，再核对事实与日期。此处为本地指引，未读取记录、保存文档或推送结果。' },
+    { q:'这个失效 Case，应该从哪里开始分析？', sk:1,
+      a:'建议先描述现象，再列出假设、设计对照验证，最后记录证据与结论。请补充物料、测试条件和原始数据。此处仅提供分析框架，未检索历史 Case，也未确认根因。' },
+    { q:'检查测试程式 timing 时，需要准备什么？', sk:2,
+      a:'先准备 timing set、适用规格与测试条件，再核对 setup/hold、corner 和对照程式。实际余量与风险需要输入数据验证。此处为本地流程指引，未扫描或运行程式。' }
+  ];
+
+  var questionButtons = Array.from(root.querySelectorAll('[data-question]'));
+  var questionReplies = [
+    '可以先在分析中心按部门筛选 Case，再核对状态、等级、期限和阻塞项。当前为离线指引，未读取部门业务数据，也未计算实际数量或风险。',
+    '建议先明确 G5 平台对应的产品与时间范围，再查看关联 Case 的现象、验证记录和未完成任务。当前未查询平台数据，不能据此判断实际问题。',
+    '可以在分析中心按 DDJOC 产品筛选，逐项核对 Case 状态与最近的过程记录。当前未读取产品 Case，不能提供真实数量或进展。',
+    '建议按 FT 失效阶段筛选 Case，结合失效模式、测试条件和证据区分问题。当前仅演示查询思路，未执行真实检索或确认根因。'
+  ];
+  var scene = -1, question = null, visible = false, paused = false, timer;
+  var welcome = document.getElementById('agent-welcome');
+  var messages = document.getElementById('agent-messages');
+  var demoControls = document.getElementById('agent-demo-controls');
+  var controls = Array.from(demoControls.querySelectorAll('[data-scene]'));
+  var pauseButton = document.getElementById('demo-pause');
+  var dialog = document.getElementById('shot-dialog');
+  function canPlay(){ return visible && !root.hidden && !dialog.open && !paused && !reduce && !document.hidden; }
+  function updatePause(){
+    pauseButton.setAttribute('aria-pressed', String(paused));
+    pauseButton.textContent = paused ? '继续演示' : '暂停演示';
+  }
+  function renderScene(index, animate){
+    clearTimeout(timer);
+    scene = index;
+    var isWelcome = index === -1 && question === null;
+    welcome.hidden = !isWelcome;
+    messages.hidden = isWelcome;
+    controls.forEach(function(button, i){ button.setAttribute('aria-pressed', String(question === null && i === index)); });
+    chips.forEach(function(chip){ chip.classList.remove('on'); });
+    if(isWelcome){
+      if(canPlay()) timer = setTimeout(function(){ renderScene(0, true); }, 8000);
+      return;
+    }
+    var sc = question === null ? SCENES[index] : {
+      q: questionButtons[question].querySelector('span').textContent,
+      a: questionReplies[question],
+      sk: -1
+    };
+    userRow.classList.add('show');
+    function showReply(){
+      if(sc.sk >= 0) chips[sc.sk].classList.add('on');
+      replyEl.textContent = sc.a;
+      replyEl.classList.add('show');
+      if(canPlay()) timer = setTimeout(function(){
+        var next = question !== null ? 0 : scene + 1 < SCENES.length ? scene + 1 : -1;
+        question = null;
+        renderScene(next, true);
+      }, 6500);
+    }
+    if(!animate || !canPlay()){
+      promptEl.textContent = sc.q;
+      showReply();
+      return;
+    }
+    promptEl.textContent = '';
+    replyEl.classList.remove('show');
+    replyEl.textContent = '';
+    var cursor = 0;
+    function typeNext(){
+      promptEl.textContent = sc.q.slice(0, ++cursor);
+      timer = setTimeout(cursor < sc.q.length ? typeNext : showReply, cursor < sc.q.length ? 32 : 350);
+    }
+    typeNext();
+  }
+  controls.forEach(function(button, index){
+    button.addEventListener('click', function(){ question = null; renderScene(index, false); });
+  });
+  questionButtons.forEach(function(button, index){
+    button.addEventListener('click', function(){
+      question = index;
+      paused = true;
+      updatePause();
+      renderScene(-1, false);
+      document.getElementById('agent-new-chat').focus();
+    });
+  });
+  pauseButton.hidden = reduce;
+  pauseButton.addEventListener('click', function(){
+    paused = !paused;
+    updatePause();
+    renderScene(scene, false);
+  });
+  document.getElementById('agent-new-chat').addEventListener('click', function(){
+    question = null;
+    renderScene(-1, false);
+    questionButtons[0].focus();
+  });
+  var launcher = document.getElementById('agent-launcher');
+  var closed = document.getElementById('agent-closed');
+  var minimize = document.getElementById('agent-minimize');
+  minimize.addEventListener('click', function(){
+    root.hidden = true;
+    closed.hidden = false;
+    demoControls.hidden = true;
+    launcher.setAttribute('aria-expanded', 'false');
+    renderScene(scene, false);
+    launcher.focus();
+  });
+  launcher.addEventListener('click', function(){
+    root.hidden = false;
+    closed.hidden = true;
+    demoControls.hidden = false;
+    launcher.setAttribute('aria-expanded', 'true');
+    renderScene(scene, false);
+    minimize.focus();
+  });
+  document.getElementById('agent-expand').addEventListener('click', function(){
+    clearTimeout(timer);
+    var image = document.getElementById('shot-full');
+    image.src = 'assets/v109-agent-page.png';
+    image.alt = 'V1.0.9 EA Agent 完整对话页：蓝紫光球、常用问题、会话侧栏与消息输入区';
+    document.getElementById('shot-title').textContent = 'EA V1.0.9 / EA Agent 完整对话页 · 原型实拍';
+    dialog.showModal();
+  });
+  dialog.addEventListener('close', function(){ renderScene(scene, false); });
+  document.addEventListener('visibilitychange', function(){ renderScene(scene, false); });
+  renderScene(-1, false);
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      visible = entry.isIntersecting;
+      renderScene(scene, canPlay());
+    });
+  },{threshold:.3});
+  io.observe(document.getElementById('agent-stage'));
+})();
+</script>
+</body>
+</html>
